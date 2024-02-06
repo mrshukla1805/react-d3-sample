@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import BarChart from './BarChart';
 
 function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://mocki.io/v1/5126797f-8d2f-47e6-92b8-8e56be1d3ee1');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+
+        const transformedData = data.map((value, index) => ({
+          letter: `Letter ${index + 1}`,
+          frequency: value
+        }));
+
+        setData(transformedData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BarChart data={data} />
     </div>
   );
 }
